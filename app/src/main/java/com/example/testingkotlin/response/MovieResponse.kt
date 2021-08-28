@@ -9,4 +9,10 @@ class MovieResponse {
     @SerializedName("results")
     @Expose
     var movie : MovieModel? = null;
+
+    override fun toString(): String {
+        return "MovieResponse{" +
+                "movie=" + movie +
+                "}"
+    }
 }

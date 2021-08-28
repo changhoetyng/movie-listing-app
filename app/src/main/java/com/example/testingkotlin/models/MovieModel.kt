@@ -9,14 +9,14 @@ class MovieModel() : Parcelable{
     var poster_path: String? = null
     var movie_id: Int? = null
     var vote_average: Float? = null
-    var movie_overview: String? = null
+    var overview: String? = null
 
     constructor(parcel: Parcel) : this() {
         title = parcel.readString()
         poster_path = parcel.readString()
         movie_id = parcel.readValue(Int::class.java.classLoader) as? Int
         vote_average = parcel.readValue(Float::class.java.classLoader) as? Float
-        movie_overview = parcel.readString()
+        overview = parcel.readString()
     }
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
@@ -24,7 +24,7 @@ class MovieModel() : Parcelable{
         parcel.writeString(poster_path)
         parcel.writeValue(movie_id)
         parcel.writeValue(vote_average)
-        parcel.writeString(movie_overview)
+        parcel.writeString(overview)
     }
 
     override fun describeContents(): Int {
