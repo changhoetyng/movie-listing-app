@@ -8,7 +8,8 @@ import com.example.testingkotlin.request.MovieApiClient
 
 object MovieRepository {
 
-
+    var mQuery: String? = null
+    var mPageNumber: Int? = null
     val movieApiClient: MovieApiClient = MovieApiClient
 
 //    companion object{
@@ -28,7 +29,13 @@ object MovieRepository {
     // 2 - Calling Method Movie repo
 
     fun searchMovieApi(query: String, pageNumber: Int) {
+        mQuery = query
+        mPageNumber = pageNumber
         movieApiClient.searchMoviesApi(query, pageNumber)
+    }
+
+    fun searchNextPage() {
+        searchMovieApi(mQuery!!, mPageNumber!! + 1)
     }
 
 }

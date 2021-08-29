@@ -26,7 +26,7 @@ class MovieRecyclerView(val onMovieListener: OnMovieListener) : RecyclerView.Ada
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         (holder as MovieViewHolder).title.text = mMovies?.get(position)!!.title
         holder.release_date.text = mMovies?.get(position)!!.release_date
-        holder.duration.text = mMovies?.get(position)?.runtime.toString()
+        holder.duration.text = mMovies?.get(position)?.original_language.toString()
         //Rating is 10 so 5 star divide by 2
         holder.ratingBar.rating = ((mMovies?.get(position)!!.vote_average!!.toFloat()) / 2)
 
@@ -43,4 +43,12 @@ class MovieRecyclerView(val onMovieListener: OnMovieListener) : RecyclerView.Ada
         return 0
     }
 
+    fun getSelectedMovie(position: Int): MovieModel? {
+        if(mMovies != null) {
+            if(mMovies!!.isNotEmpty()) {
+                return mMovies!![position]
+            }
+        }
+        return null
+    }
 }

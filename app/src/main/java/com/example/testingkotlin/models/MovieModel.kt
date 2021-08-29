@@ -10,7 +10,7 @@ class MovieModel() : Parcelable{
     var movie_id: Int? = null
     var vote_average: Float? = null
     var overview: String? = null
-    var runtime: Int? = null
+    var original_language: String? = null
 
     constructor(parcel: Parcel) : this() {
         title = parcel.readString()
@@ -18,7 +18,7 @@ class MovieModel() : Parcelable{
         movie_id = parcel.readValue(Int::class.java.classLoader) as? Int
         vote_average = parcel.readValue(Float::class.java.classLoader) as? Float
         overview = parcel.readString()
-        runtime = parcel.readInt()
+        original_language = parcel.readString()
     }
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
@@ -27,6 +27,7 @@ class MovieModel() : Parcelable{
         parcel.writeValue(movie_id)
         parcel.writeValue(vote_average)
         parcel.writeString(overview)
+        parcel.writeString(original_language)
     }
 
     override fun describeContents(): Int {

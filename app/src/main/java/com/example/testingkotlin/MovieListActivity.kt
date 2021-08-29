@@ -1,9 +1,13 @@
 package com.example.testingkotlin
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.widget.Button
+import android.widget.Toast
+import androidx.appcompat.widget.SearchView
+import androidx.appcompat.widget.Toolbar
+import androidx.databinding.adapters.AbsListViewBindingAdapter
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -36,22 +40,51 @@ class MovieListActivity : AppCompatActivity(), OnMovieListener {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        // Toolbar
+        val toolbar: Toolbar = findViewById(R.id.toolbar)
+        setSupportActionBar(toolbar)
+
+        // SearchView
+        SetupSearchView()
+
         movieListViewModel = ViewModelProvider(this)[MovieListViewModel::class.java]
         observeAnychange()
         recyclerView = findViewById(R.id.recyclerView)
         ConfigureRecyclerView()
-        searchMovieApi("fast", 1)
+//        searchMovieApi("fast", 1)
     }
 
-//    Observing any data change
+    private fun SetupSearchView() {
+        // Get data from searchView
+        val searchView: SearchView = findViewById(R.id.search_view)
+        searchView.setOnQueryTextListener(object : androidx.appcompat.widget.SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                if (query != null) {
+                    movieListViewModel?.searchMovieApi(
+                        // The search string got from searchView
+                        query,
+                        1
+                    )
+                }
+
+                return false
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                return false
+            }
+        })
+    }
+
+    //    Observing any data change
     private fun observeAnychange() {
     movieListViewModel?.getMovies()?.observe(this,
         { movieModels ->
             if(movieModels != null) {
-                for (movieModel : MovieModel in movieModels) {
-                    Log.v("Tag", "onChanged:" + movieModel.title)
+//                for (movieModel : MovieModel in movieModels) {
+//                    Log.v("Tag", "onChanged:" + movieModel.title)
                     movieRecyclerAdapter?.mMovies = movieModels
-                }
+//                }
             }
         })
     }
@@ -67,9 +100,24 @@ class MovieListActivity : AppCompatActivity(), OnMovieListener {
         movieRecyclerAdapter = MovieRecyclerView(this)
         recyclerView?.adapter = movieRecyclerAdapter
         recyclerView?.layoutManager = LinearLayoutManager(this)
+
+        // RecyclerView pagination
+        recyclerView?.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                if(!recyclerView.canScrollVertically(1)) {
+                    movieListViewModel?.searchNextPage()
+                }
+            }
+        })
+
     }
 
     override fun onMovieClick(position: Int) {
+        val intent = Intent(this, MovieDetails::class.java)
+        intent.putExtra("movie", movieRecyclerAdapter?.getSelectedMovie(position))
+        startActivity(intent)
+
+        //Toast.makeText(this,"The position" + position, Toast.LENGTH_SHORT).show()
     }
 
     override fun onCategory(category: String) {
