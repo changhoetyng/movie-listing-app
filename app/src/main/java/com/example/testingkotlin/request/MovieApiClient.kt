@@ -4,30 +4,24 @@ import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import com.example.testingkotlin.AppExecutors
 import com.example.testingkotlin.models.MovieModel
-import com.example.testingkotlin.repositories.MovieRepository
 import com.example.testingkotlin.response.MovieSearchResponse
 import com.example.testingkotlin.utils.Credentials
-import com.google.gson.GsonBuilder
 import retrofit2.Call
-import retrofit2.Response
 import java.io.IOException
-import java.util.concurrent.Future
 import java.util.concurrent.TimeUnit
 
 object MovieApiClient {
-    val mMovies: MutableLiveData<MutableList<MovieModel>>? = MutableLiveData()
+    val mMovies: MutableLiveData<MutableList<MovieModel>> = MutableLiveData()
 //    var retrieveMovieRunnable: RetrieveMoviesRunnable? = null
 
     fun searchMoviesApi(query: String, pageNumber : Int) {
         val retrieveMovieRunnable = RetrieveMoviesRunnable(query, pageNumber)
-        val myHandler = AppExecutors.mNetworkIO.submit {
-            Log.v("Tag", "lol")
+        val myHandler = AppExecutors.mNetworkIO().submit {
             retrieveMovieRunnable.run()
         }
 
-        AppExecutors.mNetworkIO.schedule({
-            Log.v("Tag", "lol")
-            myHandler.cancel(true)
+        AppExecutors.mNetworkIO().schedule({
+            myHandler?.cancel(true)
             retrieveMovieRunnable.cancelRequest()
         }, 5000, TimeUnit.MILLISECONDS)
 //        schedule({myHandler.cancel(true)}, 5000, TimeUnit.MILLISECONDS)
@@ -52,11 +46,11 @@ object MovieApiClient {
                     if(pageNumber == 1) {
                         // PostValue: used for background thread
                         // setValue: not for background thread
-                        mMovies?.postValue(list)
+                        mMovies.postValue(list)
                     } else {
-                        var currentMovies : MutableList<MovieModel>? = mMovies?.value
+                        var currentMovies : MutableList<MovieModel>? = mMovies.value
                         currentMovies?.addAll(list)
-                        mMovies?.postValue(currentMovies)
+                        mMovies.postValue(currentMovies)
                     }
                 } else {
                     val error: String = response.errorBody().toString()
@@ -71,8 +65,8 @@ object MovieApiClient {
             Log.v("Tag", pageNumber.toString())
             return Servicey.getMovieApi().searchMovie(
                 Credentials.API_KEY,
-                "Jack Reacher",
-                "1"
+                query,
+                pageNumber.toString()
             )
         }
         fun cancelRequest() {

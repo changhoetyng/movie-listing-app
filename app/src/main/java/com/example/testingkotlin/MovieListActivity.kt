@@ -6,6 +6,10 @@ import android.util.Log
 import android.widget.Button
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.example.testingkotlin.adapters.MovieRecyclerView
+import com.example.testingkotlin.adapters.OnMovieListener
 import com.example.testingkotlin.models.MovieModel
 import com.example.testingkotlin.repositories.MovieRepository
 import com.example.testingkotlin.request.Servicey
@@ -20,32 +24,33 @@ import retrofit2.Callback
 import retrofit2.Response
 import java.io.IOException
 
-class MovieListActivity : AppCompatActivity() {
+class MovieListActivity : AppCompatActivity(), OnMovieListener {
 
-    private lateinit var movieListViewModel: MovieListViewModel
+    private var movieListViewModel: MovieListViewModel? = null
+
+    //Recycler View
+    private var recyclerView: RecyclerView? = null
+    private var movieRecyclerAdapter: MovieRecyclerView? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         movieListViewModel = ViewModelProvider(this)[MovieListViewModel::class.java]
-
         observeAnychange()
-
-        val btn: Button = findViewById(R.id.button)
-        btn.setOnClickListener {
-            searchMovieApi("Jack Reacher", 1)
-
-        }
+        recyclerView = findViewById(R.id.recyclerView)
+        ConfigureRecyclerView()
+        searchMovieApi("fast", 1)
     }
 
 //    Observing any data change
     private fun observeAnychange() {
-    movieListViewModel.getMovies()?.observe(this,
+    movieListViewModel?.getMovies()?.observe(this,
         { movieModels ->
             if(movieModels != null) {
                 for (movieModel : MovieModel in movieModels) {
                     Log.v("Tag", "onChanged:" + movieModel.title)
+                    movieRecyclerAdapter?.mMovies = movieModels
                 }
             }
         })
@@ -53,7 +58,21 @@ class MovieListActivity : AppCompatActivity() {
 
     // 4 - Calling method in Main Activity
     private fun searchMovieApi(query: String, pageNumber: Int) {
-        movieListViewModel.searchMovieApi(query, pageNumber)
+        movieListViewModel?.searchMovieApi(query, pageNumber)
+    }
+
+    // Initializing Recycle View
+    fun ConfigureRecyclerView() {
+        //LiveData cannot be passed via constructor
+        movieRecyclerAdapter = MovieRecyclerView(this)
+        recyclerView?.adapter = movieRecyclerAdapter
+        recyclerView?.layoutManager = LinearLayoutManager(this)
+    }
+
+    override fun onMovieClick(position: Int) {
+    }
+
+    override fun onCategory(category: String) {
     }
 
 

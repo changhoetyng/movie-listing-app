@@ -14,10 +14,10 @@ class MovieSearchResponse {
     @Expose
     var movies : List<MovieModel>? = null;
 
-    override fun toString(): String {
-        return "MovieSearchResponse{" +
-                "total_count=" + total_count +
-                "movies=" + movies +
-                "}"
-    }
+//    override fun toString(): String {
+//        return "MovieSearchResponse{" +
+//                "total_count=" + total_count +
+//                "movies=" + movies +
+//                "}"
+//    }
 }

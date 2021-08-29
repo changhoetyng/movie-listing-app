@@ -9,7 +9,7 @@ import retrofit2.http.Query
 
 interface MovieApi {
 //    Search for movies
-    @GET("/3/discover/movie")
+    @GET("/3/search/movie")
     fun searchMovie(
     @Query("api_key") key: String,
     @Query("query") query: String,
